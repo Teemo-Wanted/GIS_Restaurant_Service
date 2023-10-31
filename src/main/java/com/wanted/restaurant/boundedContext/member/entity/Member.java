@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
@@ -31,4 +33,9 @@ public class Member {
 	private String email;
 	private String accessToken;
 	private Integer tempCode;
+
+	private String lat;	 // 위도
+	private String lon;  // 경도
+	@Enumerated(EnumType.STRING)
+	private AlarmType alarmType;
 }

@@ -23,9 +23,15 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath account = createString("account");
 
+    public final EnumPath<AlarmType> alarmType = createEnum("alarmType", AlarmType.class);
+
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final StringPath lat = createString("lat");
+
+    public final StringPath lon = createString("lon");
 
     public final StringPath password = createString("password");
 
