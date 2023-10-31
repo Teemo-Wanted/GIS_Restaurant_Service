@@ -1,1 +1,21 @@
+spring:
+  profiles:
+    active: dev
+    include: secret
+  jpa:
+    hibernate:
+      ddl-auto: create
+      jdbc:
+        batch_size=50  # 한번에 DB업로드 할 수 있는 최대 개수 지정
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true # SQL문이 줄로 나뉘어 가독성 좋게 나옴, 끄면 한줄로 나옴 select * From ~~~ 이런식
+        use_sql_comments: true  # JPQL에 대한 힌트
 
+logging:
+  level:
+    root: INFO
+    com.wanted.sns_feed_service: DEBUG  #패키지명
+    org.hibernate.orm.jdbc.bind: TRACE # SQL 완벽하게 나오게(?에 매칭된 숫자 출력)
+    org.hibernate.orm.jdbc.extract: TRACE #쿼리의 결과도 출력됨
