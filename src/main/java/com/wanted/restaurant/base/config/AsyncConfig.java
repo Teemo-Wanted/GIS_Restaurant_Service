@@ -1,4 +1,4 @@
-package com.wanted.restaurant.config;
+package com.wanted.restaurant.base.config;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
