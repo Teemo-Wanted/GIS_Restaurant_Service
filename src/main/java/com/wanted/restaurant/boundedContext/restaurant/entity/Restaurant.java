@@ -1,6 +1,7 @@
 package com.wanted.restaurant.boundedContext.restaurant.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,14 +11,17 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @DynamicUpdate
 public class Restaurant {
     @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private String sigunName; // 시군명
