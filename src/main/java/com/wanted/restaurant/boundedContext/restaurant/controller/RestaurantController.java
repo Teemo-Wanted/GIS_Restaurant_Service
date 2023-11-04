@@ -19,7 +19,8 @@ public class RestaurantController {
   @GetMapping("list")
   public RsData<RestaurantResponse.RestaurantList> searchList
           (@RequestParam(value = "lat") Double lat,@RequestParam(value = "lng") Double lng,
-           @RequestParam(value = "range") Double range){
+           @RequestParam(value = "range") Double range,
+           @RequestParam(value = "page")int page,@RequestParam(value = "size")int size){
     return RsData.of("F-1","temp message",null);
   }
 }
