@@ -4,6 +4,8 @@ package com.wanted.restaurant.boundedContext.initData;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +17,10 @@ import com.wanted.restaurant.util.Ut;
 
 @Configuration
 @Profile({"dev", "test"})
+@RequiredArgsConstructor
 public class NotProd {
+
+	private final SigunguService sigunguService;
 	@Bean
 	CommandLineRunner initData(MemberRepository memberRepository) {
 
@@ -43,6 +48,12 @@ public class NotProd {
 
 			memberList.addAll(List.of(user1, user2, user3));
 			memberRepository.saveAll(memberList);
+
+			// 시군구 정보 init
+			sigunguService.initSigunguData();
 		};
+
 	}
+
+
 }
