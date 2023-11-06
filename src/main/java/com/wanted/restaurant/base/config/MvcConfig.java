@@ -20,7 +20,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry){
-    registry.addInterceptor(authorizationInterceptor).excludePathPatterns("/member/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
+    registry.addInterceptor(authorizationInterceptor).excludePathPatterns("/member/signup","/member/signin", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
   }
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

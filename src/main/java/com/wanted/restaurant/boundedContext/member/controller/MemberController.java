@@ -6,16 +6,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wanted.restaurant.base.resolver.LoginMember;
+import com.wanted.restaurant.base.resolver.LoginUser;
 import com.wanted.restaurant.base.rsData.RsData;
 import com.wanted.restaurant.boundedContext.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -63,6 +68,37 @@ public class MemberController {
 
 		RsData<String> rsData = memberService.login(signInRequest.getAccount(), signInRequest.getPassword(),
 			signInRequest.getTempCode());
+
+		return rsData;
+	}
+
+	@Data
+	public static class UpdateRequest {
+		@NotBlank(message = "도 또는 시를 입력해주세요")
+		@Schema(description = "00도(시) 부분의 00", example = "강원 or 강원도")
+		private String doSi;
+		@NotBlank(message = "시, 군, 구 정보를 입력해주세요")
+		@Schema(description = "00시", example = "춘천시")
+		private String sgg;
+
+		@Schema(description = "점심 추천 알람 여부 기본값 NO", example = "YES OR NO")
+		private String alarm = "NO";
+	}
+
+	@PatchMapping("/update")
+	@Operation(summary = "사용자 설정 업데이트(위치, 점심 추천 기능)", security = @SecurityRequirement(name = "bearerAuth"))
+	public RsData updateInfo(@Valid @RequestBody UpdateRequest updateRequest, BindingResult bindingResult, @Parameter(hidden = true) @LoginUser
+		LoginMember loginMember) {
+		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
+		if (bindingResult.hasErrors()) {
+			List<String> errorMessages = bindingResult.getAllErrors()
+				.stream()
+				.map(error -> error.getDefaultMessage())
+				.collect(Collectors.toList());
+			return RsData.of("F-1", errorMessages.get(0));
+		}
+
+		RsData<String> rsData = memberService.update(loginMember.getId(), updateRequest.getDoSi(), updateRequest.getSgg(), updateRequest.getAlarm());
 
 		return rsData;
 	}
