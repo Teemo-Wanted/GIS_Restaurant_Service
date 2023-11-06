@@ -44,7 +44,7 @@ public class OpenAPIPipeline {
         if(savedRestaurants.isEmpty()) {
             restaurantRepository.saveAll(restaurants);
         } else {
-            // 같은 음식점 찾아서 달라진 데이터 갱신
+            // TODO: 같은 음식점 찾아서 달라진 데이터 갱신
             log.info("update 처리");
         }
     }

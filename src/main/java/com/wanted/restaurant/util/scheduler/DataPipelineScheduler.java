@@ -15,7 +15,7 @@ public class DataPipelineScheduler {
         this.openAPIPipeline = openAPIPipeline;
     }
 
-    @Scheduled(cron = "0/20 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 30 9 * * ?", zone = "Asia/Seoul")
     public void runScheduler() {
         log.info("================ start running scheduler ================");
         try {
