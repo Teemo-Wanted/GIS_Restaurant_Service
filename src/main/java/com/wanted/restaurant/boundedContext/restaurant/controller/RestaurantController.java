@@ -21,6 +21,6 @@ public class RestaurantController {
           (@RequestParam(value = "lat") Double lat,@RequestParam(value = "lng") Double lng,
            @RequestParam(value = "range") Double range,
            @RequestParam(value = "page")int page,@RequestParam(value = "size")int size){
-    return RsData.of("S-1","success",restaurantService.search(lat,lng,range,page,size));
+    return RsData.of("S-1","success",restaurantService.search(lat,lng,range*1000,page,size));
   }
 }

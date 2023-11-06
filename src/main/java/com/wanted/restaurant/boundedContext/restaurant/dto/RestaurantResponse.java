@@ -2,6 +2,7 @@ package com.wanted.restaurant.boundedContext.restaurant.dto;
 
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Slice;
 
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 public class RestaurantResponse {
   @AllArgsConstructor
   @NoArgsConstructor
+  @Getter
   public static class RestaurantList{
     private int page;
     private int size;
@@ -28,6 +30,7 @@ public class RestaurantResponse {
 
   @AllArgsConstructor
   @NoArgsConstructor
+  @Getter
   public static class RestaurantListElement{
     private long id;
     private String name;
