@@ -35,7 +35,17 @@ public class OpenAPIPipeline {
             List<Restaurant> restaurants = dataPreprecessing(restaurantOpenAPIDtoList);
 
             // 3. 데이터 저장
+            saveOrUpdate(restaurants, foodType);
+        }
+    }
+
+    private void saveOrUpdate(List<Restaurant> restaurants, FoodType foodType) {
+        List<Restaurant> savedRestaurants = restaurantRepository.findBySanitationBusinessName(foodType.getSanitationBusinessName());
+        if(savedRestaurants.isEmpty()) {
             restaurantRepository.saveAll(restaurants);
+        } else {
+            // 같은 음식점 찾아서 달라진 데이터 갱신
+            log.info("update 처리");
         }
     }
 
