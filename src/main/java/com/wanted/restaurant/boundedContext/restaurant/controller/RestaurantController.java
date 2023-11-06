@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("restaurant")
+@RequestMapping("v1/restaurant")
 @RequiredArgsConstructor
 public class RestaurantController {
 
@@ -21,6 +21,6 @@ public class RestaurantController {
           (@RequestParam(value = "lat") Double lat,@RequestParam(value = "lng") Double lng,
            @RequestParam(value = "range") Double range,
            @RequestParam(value = "page")int page,@RequestParam(value = "size")int size){
-    return RsData.of("F-1","temp message",null);
+    return RsData.of("S-1","success",restaurantService.search(lat,lng,range,page,size));
   }
 }
