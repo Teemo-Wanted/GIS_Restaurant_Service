@@ -1,20 +1,25 @@
 package com.wanted.restaurant.boundedContext.member.controller;
 
+import static jakarta.persistence.GenerationType.*;
 import static org.springframework.http.MediaType.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wanted.restaurant.base.resolver.LoginMember;
 import com.wanted.restaurant.base.resolver.LoginUser;
 import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.member.entity.AlarmType;
+import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +27,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,12 +41,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/member", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/member", produces = APPLICATION_JSON_VALUE)
 @Tag(name = "MemberController", description = "회원가입, 로그인처리 컨트롤러")
 public class MemberController {
 	private final MemberService memberService;
 
-	@PostMapping("/signup")
+	@PostMapping(value = "/signup", consumes = APPLICATION_JSON_VALUE)
 	@Operation(summary = "회원가입")
 	public RsData signup(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult) {
 		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
@@ -54,7 +64,7 @@ public class MemberController {
 		return rsData;
 	}
 
-	@PostMapping("/signin")
+	@PostMapping(value = "/signin", consumes = APPLICATION_JSON_VALUE)
 	@Operation(summary = "JWT 발급")
 	public RsData signIn(@Valid @RequestBody SignInRequest signInRequest, BindingResult bindingResult) {
 		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
@@ -85,7 +95,7 @@ public class MemberController {
 		private String alarm = "NO";
 	}
 
-	@PatchMapping("/update")
+	@PatchMapping(value = "/update", consumes = APPLICATION_JSON_VALUE)
 	@Operation(summary = "사용자 설정 업데이트(위치, 점심 추천 기능)", security = @SecurityRequirement(name = "bearerAuth"))
 	public RsData updateInfo(@Valid @RequestBody UpdateRequest updateRequest, BindingResult bindingResult, @Parameter(hidden = true) @LoginUser
 		LoginMember loginMember) {
@@ -101,6 +111,41 @@ public class MemberController {
 		RsData<String> rsData = memberService.update(loginMember.getId(), updateRequest.getDoSi(), updateRequest.getSgg(), updateRequest.getAlarm());
 
 		return rsData;
+	}
+
+	@Data
+	public static class MeResponse {
+
+		private Long memberId;
+
+		private String userName;
+
+		private String email;
+
+		private String lat;	 // 위도
+		private String lon;  // 경도
+
+		private String alarmType;
+		public MeResponse(Member member) {
+			this.memberId = member.getId();
+			this.userName = member.getAccount();
+			this.email = member.getEmail();
+			this.lat = member.getLat();
+			this.lon = member.getLon();
+			this.alarmType = String.valueOf(member.getAlarmType());
+		}
+
+	}
+
+	@GetMapping(value = "/me")
+	@Operation(summary = "사용자 정보 조회", security = @SecurityRequirement(name = "bearerAuth"))
+	public RsData<MeResponse> memberInfo(@Parameter(hidden = true) @LoginUser LoginMember loginMember) {
+		RsData<Member> rsData = memberService.get(loginMember.getId());
+
+		if(rsData.isFail())
+			return (RsData) rsData;
+
+		return RsData.of(rsData.getResultCode(), rsData.getMsg(), new MeResponse(rsData.getData()));
 	}
 
 	@Data
