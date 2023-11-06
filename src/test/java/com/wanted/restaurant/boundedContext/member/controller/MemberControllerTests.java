@@ -124,7 +124,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -150,7 +150,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -180,7 +180,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
