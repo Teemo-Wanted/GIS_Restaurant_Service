@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OpenAPIPipeline {
 
-    @Autowired
     private final OpenAPIReader openAPIReader;
     @Autowired
     private RestaurantRepository restaurantRepository;

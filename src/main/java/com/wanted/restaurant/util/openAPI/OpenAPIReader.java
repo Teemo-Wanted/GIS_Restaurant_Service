@@ -21,7 +21,6 @@ import java.util.List;
 @Slf4j
 public class OpenAPIReader {
 
-    @Autowired
     private final OpenAPIJSONParser openAPIJSONParser;
 
     @Value("${open-api.url}")
