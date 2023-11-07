@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,16 @@ public class MemberControllerTests {
 
 	@Autowired
 	private MemberRepository memberRepository;
+
+	private Member user1;
+	private String user1Token;
+
+	@BeforeEach
+	void init() {
+		// 테스트용 user1 토큰 가져오기
+		user1 = memberRepository.findByAccount("user1").get();
+		user1Token = user1.getAccessToken();
+	}
 
 	@Test
 	@DisplayName("POST /member/signup 은 회원가입을 처리한다.")
@@ -124,7 +135,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -150,7 +161,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -180,7 +191,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -258,5 +269,56 @@ public class MemberControllerTests {
 			.andExpect(jsonPath("$.resultCode").value("F-1"))
 			.andExpect(jsonPath("$.msg").value( "이메일 인증 코드가 일치하지 않습니다."))
 			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	@DisplayName("사용자 정보 업데이트 테스트, 알람 설정 기본값 No")
+	void t8() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				patch("/member/update")
+					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+					.content("""
+                    {
+						"doSi": "강원도",
+						"sgg": "춘천시"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// 춘천 값 확인
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value( "회원 정보 업데이트 성공"))
+			.andExpect(jsonPath("$.data.lon").value("127.7323111"))
+			.andExpect(jsonPath("$.data.lat").value("37.87854167"))
+			.andExpect(jsonPath("$.data.alarmType").value("NO"));
+	}
+
+	@Test
+	@DisplayName("사용자 정보 확인")
+	void t9() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				get("/member/me")
+					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+			)
+			.andDo(print());
+
+		// 춘천 값 확인
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value( "회원 조회 성공"))
+			.andExpect(jsonPath("$.data.memberId").value("1"))
+			.andExpect(jsonPath("$.data.userName").value("user1"))
+			.andExpect(jsonPath("$.data.email").value("user1@test.com"))
+			.andExpect(jsonPath("$.data.alarmType").value("null"));
 	}
 }
