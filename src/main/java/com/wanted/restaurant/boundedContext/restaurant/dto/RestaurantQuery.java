@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class RestaurantQuery {
-
   @AllArgsConstructor
   @NoArgsConstructor
   @Getter
@@ -16,5 +15,16 @@ public class RestaurantQuery {
     private double lat;
     private double lng;
     private double distance;
+    public static RestaurantFeed of(RestaurantFeedInterface f){
+      return new RestaurantFeed(f.getId(),f.getName(),f.getType(),f.getLat(),f.getLat(),f.getDistance());
+    }
+  }
+  public static interface RestaurantFeedInterface{
+    Long getId();
+    String getName();
+    String getType();
+    Double getLat();
+    Double getLng();
+    Double getDistance();
   }
 }
