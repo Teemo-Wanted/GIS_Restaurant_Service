@@ -52,5 +52,4 @@ public class Restaurant {
     private Double grade; // 평점
     @Column(unique=true)
     private String businessPlaceNameAndAddress; // 가게명 + 주소
-
 }
