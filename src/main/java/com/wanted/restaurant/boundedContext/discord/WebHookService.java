@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,6 +37,7 @@ public class WebHookService {
 	@Value("${discord.webhookURL}")
 	private String url;
 
+	@Scheduled(cron = "0 30 11 * * ?", zone = "Asia/Seoul")
 	public void callEvent() {
 		// 1. 전체 회원 중 알람 설정한 회원을 가져옴
 		List<Member> members = memberService.getAllMembersByAlarmYes();
