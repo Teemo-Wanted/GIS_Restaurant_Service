@@ -1,8 +1,13 @@
 package com.wanted.restaurant.boundedContext.restaurant.service;
 
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeedInterface;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
 import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,9 +35,12 @@ public class RestaurantServiceTest {
   @DisplayName("search 성공 테스트")
   void search_success(){
     //given (mocking & prepare success data)
-    List<RestaurantFeed> sampleRestaurants = new ArrayList<>();
+    List<RestaurantFeedInterface> sampleRestaurants = new ArrayList<>();
+    List<RestaurantFeed> expectRestaurantList = new ArrayList<>();
     for(long i=0;i<5;i++){
-      sampleRestaurants.add(new RestaurantFeed(i,"sample restaurant name "+i,"sample type",
+      sampleRestaurants.add(new RestaurantFeedImpl(i,"sample restaurant name "+i,"sample type",
+              37.655225D,127.515502D,0.1D));
+      expectRestaurantList.add(new RestaurantFeed(i,"sample restaurant name "+i,"sample type",
               37.655225D,127.515502D,0.1D));
     }
     int samplePage = 0;
@@ -40,7 +48,7 @@ public class RestaurantServiceTest {
     Mockito.when(restaurantRepository.searchRestaurants(anyDouble(),anyDouble(),anyDouble(), any()))
             .thenReturn(new SliceImpl<>(sampleRestaurants,PageRequest.of(samplePage,sampleSize),false));
 
-    RestaurantResponse.RestaurantList expectResult = createExpectResult(sampleRestaurants,samplePage,sampleSize);
+    RestaurantResponse.RestaurantList expectResult = createExpectResult(expectRestaurantList,samplePage,sampleSize);
 
     //when (execute method)
     RestaurantResponse.RestaurantList response = restaurantService
@@ -58,5 +66,52 @@ public class RestaurantServiceTest {
               0.1D,r.getLat(),r.getLng()));
     }
     return new RestaurantResponse.RestaurantList(page,size,false,list);
+  }
+  @NoArgsConstructor
+  private static class RestaurantFeedImpl implements RestaurantFeedInterface {
+    private long id;
+    private String name;
+    private String type;
+    private double lat;
+    private double lng;
+    private double distance;
+
+    @Override
+    public Long getId() {
+      return this.id;
+    }
+
+    @Override
+    public String getName() {
+      return this.name;
+    }
+
+    @Override
+    public String getType() {
+      return this.type;
+    }
+
+    @Override
+    public Double getLat() {
+      return this.lat;
+    }
+
+    @Override
+    public Double getLng() {
+      return this.lng;
+    }
+
+    @Override
+    public Double getDistance(){
+      return this.distance;
+    }
+    public RestaurantFeedImpl(long id,String name,String type,double lat,double lng, double distance){
+      this.id=id;
+      this.name=name;
+      this.type=type;
+      this.lat=lat;
+      this.lng=lng;
+      this.distance=distance;
+    }
   }
 }
