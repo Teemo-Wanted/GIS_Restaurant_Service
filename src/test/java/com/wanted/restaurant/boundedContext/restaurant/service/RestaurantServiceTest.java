@@ -1,7 +1,7 @@
 package com.wanted.restaurant.boundedContext.restaurant.service;
 
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
-import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +30,10 @@ public class RestaurantServiceTest {
   @DisplayName("search 성공 테스트")
   void search_success(){
     //given (mocking & prepare success data)
-    List<Restaurant> sampleRestaurants = new ArrayList<>();
+    List<RestaurantFeed> sampleRestaurants = new ArrayList<>();
     for(long i=0;i<5;i++){
-      sampleRestaurants.add(new Restaurant(i,"sample restaurant name "+i,"sample type",
-              37.655225D,127.515502D));
+      sampleRestaurants.add(new RestaurantFeed(i,"sample restaurant name "+i,"sample type",
+              37.655225D,127.515502D,0.1D));
     }
     int samplePage = 0;
     int sampleSize = 5;
@@ -51,9 +51,9 @@ public class RestaurantServiceTest {
     Mockito.verify(restaurantRepository,Mockito.times(1))
             .searchRestaurants(anyDouble(),anyDouble(),anyDouble(),any());
   }
-  private RestaurantResponse.RestaurantList createExpectResult(List<Restaurant> restaurants,int page,int size){
+  private RestaurantResponse.RestaurantList createExpectResult(List<RestaurantFeed> restaurants,int page,int size){
     List<RestaurantResponse.RestaurantListElement> list = new ArrayList<>();
-    for(Restaurant r : restaurants){
+    for(RestaurantFeed r : restaurants){
       list.add(new RestaurantResponse.RestaurantListElement(r.getId(),r.getName(),r.getType(),
               0.1D,r.getLat(),r.getLng()));
     }

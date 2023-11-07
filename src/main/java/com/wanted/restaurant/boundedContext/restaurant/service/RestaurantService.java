@@ -1,5 +1,7 @@
 package com.wanted.restaurant.boundedContext.restaurant.service;
 
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
@@ -14,7 +16,7 @@ public class RestaurantService {
   private final RestaurantRepository restaurantRepository;
 
   public RestaurantResponse.RestaurantList search(double lat,double lng,double range,int page,int size){
-    Slice<Restaurant> restaurants = restaurantRepository.searchRestaurants(lat,lng,range,PageRequest.of(page,size));
+    Slice<RestaurantFeed> restaurants = restaurantRepository.searchRestaurants(lat,lng,range,PageRequest.of(page,size));
     return RestaurantResponse.RestaurantList.of(restaurants);
   }
 }
