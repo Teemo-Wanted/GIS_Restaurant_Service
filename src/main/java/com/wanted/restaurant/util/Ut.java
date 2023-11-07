@@ -3,6 +3,8 @@ package com.wanted.restaurant.util;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +29,12 @@ public class Ut {
 			} catch (JsonProcessingException e) {
 				return null;
 			}
+		}
+		// map을 JSONObject 변환
+		public static JSONObject mapToJSONObject(Map<String, Object> map) {
+			JSONObject jsonObject = new JSONObject(map);
+			System.out.println(jsonObject);
+			return jsonObject;
 		}
 	}
 

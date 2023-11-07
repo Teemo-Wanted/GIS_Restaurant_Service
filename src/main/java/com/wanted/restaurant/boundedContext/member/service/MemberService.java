@@ -167,4 +167,8 @@ public class MemberService {
 			return RsData.of("F-1", "일치하는 회원정보가 없습니다.");
 		return RsData.of("S-1", "회원 조회 성공", member);
 	}
+
+	public List<Member> getAllMembersByAlarmYes() {
+		return memberRepository.findAllByAlarmType(AlarmType.YES);
+	}
 }
