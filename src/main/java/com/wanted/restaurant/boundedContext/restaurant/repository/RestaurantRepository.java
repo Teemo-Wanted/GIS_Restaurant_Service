@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface RestaurantRepository extends JpaRepository<Restaurant,Long> {
@@ -18,4 +19,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Long> {
   Slice<RestaurantQuery.RestaurantFeedInterface> searchRestaurants(@Param(value = "lat")double lat, @Param(value = "lng")double lng,
                                            @Param(value = "maxDistance")double maxDistance, Pageable pageable);
   List<Restaurant> findBySanitationBusinessName(String sanitationBusinessName);
+
+  Optional<Restaurant> findByBusinessPlaceNameAndRefinedLocationAddress(String businessPlaceName, String finedLocationAddress);
 }
