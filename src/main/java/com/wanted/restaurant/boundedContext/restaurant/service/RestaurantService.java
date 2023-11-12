@@ -29,4 +29,8 @@ public class RestaurantService {
     List<RestaurantFeed> feeds = interfaceList.stream().map(RestaurantFeed::of).toList();
     return new SliceImpl<>(feeds,feedInterfaces.getPageable(),feedInterfaces.hasNext());
   }
+
+  public List<Restaurant> getAll() {
+    return restaurantRepository.findAll();
+  }
 }
