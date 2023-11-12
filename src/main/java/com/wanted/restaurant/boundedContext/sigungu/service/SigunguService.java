@@ -3,10 +3,10 @@ package com.wanted.restaurant.boundedContext.sigungu.service;
 import com.wanted.restaurant.base.rsData.RsData;
 import com.wanted.restaurant.boundedContext.sigungu.entity.Sigungu;
 import com.wanted.restaurant.boundedContext.sigungu.repository.SigunguRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SigunguService {
 
     private final SigunguRepository sigunguRepository;
@@ -63,4 +64,11 @@ public class SigunguService {
         return RsData.of("S-1", "Data insertion complete", sigungusList);
     }
 
+    public RsData<List<Double>> getLatAndLonByDoSiAndSgg(String doSi, String sgg) {
+        Sigungu sigungu = sigunguRepository.findByDosiContainingAndSigunguContaining(doSi, sgg);
+        if(sigungu == null)
+            return RsData.of("F-1", "지역 조회에 실패하였습니다.");
+
+        return RsData.of("S-1", "지역 조회 성공", List.of(sigungu.getLongitude(), sigungu.getLatitude()));
+    }
 }

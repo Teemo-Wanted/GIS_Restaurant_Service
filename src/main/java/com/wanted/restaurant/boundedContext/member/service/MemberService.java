@@ -1,6 +1,7 @@
 package com.wanted.restaurant.boundedContext.member.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -10,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wanted.restaurant.base.jwt.JwtProvider;
 import com.wanted.restaurant.base.rsData.RsData;
 import com.wanted.restaurant.boundedContext.email.service.EmailService;
+import com.wanted.restaurant.boundedContext.member.entity.AlarmType;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
+import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
 import com.wanted.restaurant.util.Ut;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
@@ -25,6 +28,8 @@ public class MemberService {
 	private final JwtProvider jwtProvider;
 
 	private final EmailService emailService;
+
+	private final SigunguService sigunguService;
 
 	@Transactional
 	public RsData join(String account, String password, String email) {
@@ -124,5 +129,46 @@ public class MemberService {
 		memberRepository.save(modifiedMember);
 
 		return newAccessToken;
+	}
+
+	@Transactional
+	public RsData update(Long memberId, String doSi, String sgg, String alarm) {
+		Member member = memberRepository.findById(memberId).get();
+
+		// 강원 or 강원도, 세종 or 세종시 or 세종특별시 등 입력 다양하게 할 수 있으니 앞에 2글자만 추출
+		RsData<List<Double>> rsDataLatAndLon = sigunguService.getLatAndLonByDoSiAndSgg(doSi.substring(0, 2), sgg.substring(0, 2));
+
+		if(rsDataLatAndLon.isFail())
+			return rsDataLatAndLon;
+
+		AlarmType alarmType;
+		if(alarm.contains("y") || alarm.contains("Y"))
+			alarmType = AlarmType.YES;
+		else
+			alarmType = AlarmType.NO;
+
+		List<Double> data = rsDataLatAndLon.getData();
+
+
+		Member modifyMember = member.toBuilder()
+			.lon(String.valueOf(data.get(0)))
+			.lat(String.valueOf(data.get(1)))
+			.alarmType(alarmType)
+			.build();
+
+		memberRepository.save(modifyMember);
+
+		return RsData.of("S-1", "회원 정보 업데이트 성공", modifyMember);
+	}
+
+	public RsData<Member> get(Long memberId) {
+		Member member = memberRepository.findById(memberId).get();
+		if(member == null)
+			return RsData.of("F-1", "일치하는 회원정보가 없습니다.");
+		return RsData.of("S-1", "회원 조회 성공", member);
+	}
+
+	public List<Member> getAllMembersByAlarmYes() {
+		return memberRepository.findAllByAlarmType(AlarmType.YES);
 	}
 }

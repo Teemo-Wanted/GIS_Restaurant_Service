@@ -31,6 +31,7 @@ public class Member {
 	private String password;
 	@Email
 	private String email;
+	@JsonIgnore
 	private String accessToken;
 	private Integer tempCode;
 

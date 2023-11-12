@@ -41,6 +41,7 @@ public class EvaluationService {
                 .content(requestDto.getContent())
                 .build();
         evaluationRepository.save(evaluation);
+        //맛집에 대해 평접 업데이트(맛집 모든 평가 기록 조회 및 평균 계산)
         return new RsData("EVALUATION_CREATED", "평가 생성 완료", new EvaluateResponseDto(evaluation));
     }
 }
