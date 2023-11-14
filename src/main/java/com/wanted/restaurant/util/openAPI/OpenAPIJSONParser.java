@@ -32,7 +32,7 @@ public class OpenAPIJSONParser {
 
         List<RestaurantOpenAPIDto> restaurantOpenAPIDtoList = new ArrayList<>();
 
-        // json -> entity 변환
+        // json -> dto 변환
         for (Object restaurantJson : restaurantJsonList) {
             JSONObject jsonProperties = (JSONObject) restaurantJson;
             try {

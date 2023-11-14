@@ -9,12 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class OpenAPIPipeline {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+    @Transactional
     public void pipeline() throws IOException, ParseException {
         for(FoodType foodType : FoodType.values()) {
             String endpoint = foodType.getEndpoint();
@@ -42,10 +46,28 @@ public class OpenAPIPipeline {
         List<Restaurant> savedRestaurants = restaurantRepository.findBySanitationBusinessName(foodType.getSanitationBusinessName());
         if(savedRestaurants.isEmpty()) {
             restaurantRepository.saveAll(restaurants);
-        } else {
-            // TODO: 같은 음식점 찾아서 달라진 데이터 갱신
-            log.info("update 처리");
+            return;
         }
+
+        for(Restaurant restaurant : restaurants) {
+            updateData(restaurant);
+        }
+
+    }
+
+    // [[[ 데이터 갱신 ]]]
+    // 1. 음식점 있다면, 바뀐 값만 확인 후 update >>> @DynamicUpdate 활용
+    // 2. 음식점 없다면, insert
+    // *조회는 Unique key 조합인 businessPlaceName + refinedLocationAddress 으로 한다. (주소가 바뀌 었을 때 조회할 수 없는 한계가 있음.)
+    private void updateData(Restaurant restaurant) {
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findByBusinessPlaceNameAndRefinedLocationAddress(restaurant.getBusinessPlaceName(), restaurant.getRefinedLocationAddress());
+        if(optionalRestaurant.isEmpty()) { // 값이 없다.
+            restaurantRepository.save(restaurant);
+            return;
+        }
+
+        Restaurant savedRestaurant = optionalRestaurant.get();
+        savedRestaurant.updateNewData(restaurant);
     }
 
     private List<Restaurant> dataPreprecessing(List<RestaurantOpenAPIDto> restaurantOpenAPIDtoList) {
