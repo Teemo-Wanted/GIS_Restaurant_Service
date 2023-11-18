@@ -6,6 +6,7 @@ import com.wanted.restaurant.boundedContext.evalutation.service.EvaluationServic
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class EvaluationController {
 
     //평가 생성
     @PostMapping("/evaluate")
-    public ResponseEntity<RsData> evaluateRestaurant(EvaluateRequestDto requestDto){
+    public ResponseEntity<RsData> evaluateRestaurant(@RequestBody EvaluateRequestDto requestDto){
         return ResponseEntity.ok().body(evaluationService.evaluate(requestDto));
 
     }

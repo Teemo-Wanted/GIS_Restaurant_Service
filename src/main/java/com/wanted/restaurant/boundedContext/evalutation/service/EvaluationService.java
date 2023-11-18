@@ -9,6 +9,7 @@ import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
+import com.wanted.restaurant.boundedContext.restaurant.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
     private final MemberRepository memberRepository;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
 
     /**
      * 평가 생성
@@ -41,7 +43,10 @@ public class EvaluationService {
                 .content(requestDto.getContent())
                 .build();
         evaluationRepository.save(evaluation);
+
         //맛집에 대해 평접 업데이트(맛집 모든 평가 기록 조회 및 평균 계산)
+        restaurantService.updateGrade(restaurantOptional.get());
+
         return new RsData("EVALUATION_CREATED", "평가 생성 완료", new EvaluateResponseDto(evaluation));
     }
 }

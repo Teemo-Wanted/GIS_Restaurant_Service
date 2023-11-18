@@ -14,7 +14,7 @@ public class EvaluateResponseDto {
 
     public EvaluateResponseDto(Evaluation evaluation){
         this.account=evaluation.getMember().getAccount();
-        this.restaurantName=evaluation.getRestaurant().getRefinedLocationAddress();
+        this.restaurantName=evaluation.getRestaurant().getBusinessPlaceName();
         this.score=evaluation.getScore();
         this.content=evaluation.getContent();
     }

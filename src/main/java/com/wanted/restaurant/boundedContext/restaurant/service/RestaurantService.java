@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,5 +33,10 @@ public class RestaurantService {
 
   public List<Restaurant> getAll() {
     return restaurantRepository.findAll();
+  }
+
+  @Transactional
+  public void updateGrade(Restaurant restaurant){
+    restaurant.updateGrade(restaurantRepository.getAvg(restaurant.getBusinessPlaceName()));
   }
 }

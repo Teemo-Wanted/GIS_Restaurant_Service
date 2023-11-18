@@ -67,4 +67,8 @@ public class Restaurant {
         this.businessPlaceNameAndAddress = restaurant.getBusinessPlaceNameAndAddress(); // 가게명 + 주소
         
     }
+
+    public void updateGrade(double grade) {
+        this.grade=grade;
+    }
 }
