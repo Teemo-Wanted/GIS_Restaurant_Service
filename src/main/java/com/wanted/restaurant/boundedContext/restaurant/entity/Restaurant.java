@@ -52,4 +52,19 @@ public class Restaurant {
     private Double grade; // 평점
     @Column(unique=true)
     private String businessPlaceNameAndAddress; // 가게명 + 주소
+
+    // 사용하는 데이터만 업데이트
+    public void updateNewData(Restaurant restaurant) {
+        this.sigunName = restaurant.getSigunName(); // 시군명 
+        this.sigunCode = restaurant.getSigunCode(); // 시군 코드
+        this.businessPlaceName = restaurant.getBusinessPlaceName(); // 사업장명
+        this.businessStatus = restaurant.getBusinessStatus(); // 영업 상태
+        this.refinedLocationAddress = restaurant.getRefinedLocationZipCode(); // 지번 주소
+        this.refinedRoadNameAddress = restaurant.getRefinedRoadNameAddress(); // 도로명 주소
+        this.refinedLocationZipCode = restaurant.getRefinedLocationZipCode(); // 우편번호
+        this.refinedWGS84Longitude = restaurant.getRefinedWGS84Longitude(); // 경도
+        this.refinedWGS84Latitude = restaurant.getRefinedWGS84Latitude(); // 위도
+        this.businessPlaceNameAndAddress = restaurant.getBusinessPlaceNameAndAddress(); // 가게명 + 주소
+        
+    }
 }
