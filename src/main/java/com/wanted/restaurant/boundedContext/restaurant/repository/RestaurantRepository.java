@@ -25,6 +25,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
 	List<Restaurant> findBySanitationBusinessName(String sanitationBusinessName);
 
+  Optional<Restaurant> findByBusinessPlaceNameAndRefinedLocationAddress(String businessPlaceName, String finedLocationAddress);
+
+  @Query(value = "select a.* from (select round(avg(score),1)" +
+          " from evaluation join restaurant on evaluation.restaurant_id = restaurant.id" +
+          " where restaurant.business_place_name=:placeName ) as a",nativeQuery = true)
+  Double getAvg(@Param(value = "placeName") String businessPlaceName);
+
 	Optional<Restaurant> findByBusinessPlaceNameAndRefinedLocationAddress(String businessPlaceName,
 		String finedLocationAddress);
+
 }
