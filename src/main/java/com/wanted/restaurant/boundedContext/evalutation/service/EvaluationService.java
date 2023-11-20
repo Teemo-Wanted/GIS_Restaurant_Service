@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,5 +49,13 @@ public class EvaluationService {
         restaurantService.updateGrade(restaurantOptional.get());
 
         return new RsData("EVALUATION_CREATED", "평가 생성 완료", new EvaluateResponseDto(evaluation));
+    }
+
+    /*
+        식당 평가 조회
+     */
+    public List<Evaluation> get(Restaurant restaurant) {
+        List<Evaluation> allByRestaurantId = evaluationRepository.findAllByRestaurant(restaurant);
+        return allByRestaurantId;
     }
 }
