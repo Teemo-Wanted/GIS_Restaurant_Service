@@ -50,12 +50,4 @@ public class EvaluationService {
 
         return new RsData("EVALUATION_CREATED", "평가 생성 완료", new EvaluateResponseDto(evaluation));
     }
-
-    /*
-        식당 평가 조회
-     */
-    public List<Evaluation> get(Restaurant restaurant) {
-        List<Evaluation> allByRestaurantId = evaluationRepository.findAllByRestaurant(restaurant);
-        return allByRestaurantId;
-    }
 }
