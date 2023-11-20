@@ -93,11 +93,7 @@ public class RestaurantService {
 
 		List<LunchDTO.LunchDTOInterface> restaurantByCategoryTop3 = restaurantRepository.getRestaurantByCategoryTop3(lat, lng,
 			maxDistance * 1000);
-		System.out.println("----인터페이스 변환 전-----");
-		System.out.println(restaurantByCategoryTop3);
 		List<LunchDTO> result = toLunchDTO(restaurantByCategoryTop3);
-		System.out.println("---인터페이스 리스트로 변환 후");
-		System.out.println(result);
 
 		if(result.isEmpty())
 			return RsData.of("F-1", "주변에 등록된 식당이 없어요");
