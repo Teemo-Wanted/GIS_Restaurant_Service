@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.wanted.restaurant.boundedContext.evalutation.dto.EvaluateRequestDto;
+import com.wanted.restaurant.boundedContext.evalutation.service.EvaluationService;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
+import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
 import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
 import com.wanted.restaurant.util.Ut;
 import com.wanted.restaurant.util.openAPI.OpenAPIPipeline;
@@ -23,7 +26,7 @@ public class NotProd {
 
 	@Bean
 	CommandLineRunner initData(MemberRepository memberRepository, SigunguService sigunguService,
-		OpenAPIPipeline openAPIPipeline) {
+		OpenAPIPipeline openAPIPipeline, EvaluationService evaluationService) {
 
 		String password = Ut.encrypt.encryptPW("1234");
 		return args -> {
@@ -58,6 +61,15 @@ public class NotProd {
 
 			// 데이터 받아오기
 			openAPIPipeline.pipeline();
+
+			EvaluateRequestDto evaluateRequestDto1 = new EvaluateRequestDto();
+
+			evaluateRequestDto1.setContent("맛있어용");
+			evaluateRequestDto1.setScore(5);
+			evaluateRequestDto1.setMemberId(1);
+			evaluateRequestDto1.setRestaurantId(1);
+
+			evaluationService.evaluate(evaluateRequestDto1);
 
 		};
 

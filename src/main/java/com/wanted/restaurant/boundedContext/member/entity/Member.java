@@ -33,6 +33,7 @@ public class Member {
 	private String email;
 	@JsonIgnore
 	private String accessToken;
+	@JsonIgnore
 	private Integer tempCode;
 
 	private String lat;	 // 위도
