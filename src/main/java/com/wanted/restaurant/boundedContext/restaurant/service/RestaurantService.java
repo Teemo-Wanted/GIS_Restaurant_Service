@@ -1,6 +1,10 @@
 package com.wanted.restaurant.boundedContext.restaurant.service;
 
 import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.evalutation.entity.Evaluation;
+import com.wanted.restaurant.boundedContext.evalutation.repository.EvaluationRepository;
+import com.wanted.restaurant.boundedContext.evalutation.service.EvaluationService;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantDetailDTO;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeedInterface;
@@ -26,6 +30,9 @@ public class RestaurantService {
   private final RestaurantRepository restaurantRepository;
   private final SigunguService sigunguService;
 
+  private final EvaluationRepository evaluationRepository;
+
+
   public RsData<RestaurantResponse.RestaurantList> search(double lat,double lng,double range,int page,int size){
     RsData<Sigungu> sigunguRsData = sigunguService.get(lat, lng);
 
@@ -49,5 +56,22 @@ public class RestaurantService {
   @Transactional
   public void updateGrade(Restaurant restaurant){
     restaurant.updateGrade(restaurantRepository.getAvg(restaurant.getBusinessPlaceName()));
+  }
+
+  /*
+    식당 상세 정보 반환
+    - 식당 정보
+    - 작성한 리뷰
+   */
+  public RsData<RestaurantDetailDTO> get(Long id) {
+    Restaurant restaurant = restaurantRepository.findById(id).orElse(null);
+
+    if(restaurant == null) {
+      return RsData.of("F-1", "해당 식당 정보가 존재하지 않습니다.");
+    }
+
+    List<Evaluation> evaluations = evaluationRepository.findAllByRestaurant(restaurant);
+
+    return RsData.of("S-1", "식당 정보 조회 성공", new RestaurantDetailDTO(restaurant, evaluations));
   }
 }
