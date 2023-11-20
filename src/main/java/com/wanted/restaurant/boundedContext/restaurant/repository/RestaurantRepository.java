@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.wanted.restaurant.boundedContext.evalutation.entity.Evaluation;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 
@@ -31,5 +32,4 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
           " from evaluation join restaurant on evaluation.restaurant_id = restaurant.id" +
           " where restaurant.business_place_name=:placeName ) as a",nativeQuery = true)
   Double getAvg(@Param(value = "placeName") String businessPlaceName);
-
 }

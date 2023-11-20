@@ -1,11 +1,13 @@
 package com.wanted.restaurant.boundedContext.restaurant.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantDetailDTO;
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
 import com.wanted.restaurant.boundedContext.restaurant.service.RestaurantService;
 
@@ -31,5 +33,14 @@ public class RestaurantController {
 			size);
 
 		return searchRsData;
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "식당 상세정보 조회", security = @SecurityRequirement(name = "bearerAuth"))
+	public RsData<RestaurantDetailDTO> detail(@PathVariable Long id) {
+
+		RsData<RestaurantDetailDTO> detailDTORsData = restaurantService.get(id);
+
+		return detailDTORsData;
 	}
 }
