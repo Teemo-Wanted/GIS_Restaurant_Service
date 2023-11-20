@@ -71,4 +71,12 @@ public class SigunguService {
 
         return RsData.of("S-1", "지역 조회 성공", List.of(sigungu.getLongitude(), sigungu.getLatitude()));
     }
+
+    public RsData<Sigungu> get(Double lat, Double lng) {
+        Sigungu sigungu = sigunguRepository.findByLongitudeAndLatitude(lng, lat);
+        if(sigungu == null)
+            return RsData.of("F-1", "지역 조회에 실패하였습니다.");
+
+        return RsData.of("S-1", "지역 조회 성공", sigungu);
+    }
 }
