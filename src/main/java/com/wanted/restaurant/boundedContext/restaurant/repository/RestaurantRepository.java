@@ -32,7 +32,4 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
           " where restaurant.business_place_name=:placeName ) as a",nativeQuery = true)
   Double getAvg(@Param(value = "placeName") String businessPlaceName);
 
-	Optional<Restaurant> findByBusinessPlaceNameAndRefinedLocationAddress(String businessPlaceName,
-		String finedLocationAddress);
-
 }
