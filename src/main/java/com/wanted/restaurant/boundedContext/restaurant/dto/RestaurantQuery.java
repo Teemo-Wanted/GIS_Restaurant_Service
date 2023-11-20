@@ -15,8 +15,9 @@ public class RestaurantQuery {
     private double lat;
     private double lng;
     private double distance;
+    private double grade;
     public static RestaurantFeed of(RestaurantFeedInterface f){
-      return new RestaurantFeed(f.getId(),f.getName(),f.getType(),f.getLat(),f.getLng(),f.getDistance());
+      return new RestaurantFeed(f.getId(),f.getName(),f.getType(),f.getLat(),f.getLng(),f.getDistance(), f.getGrade());
     }
   }
   public static interface RestaurantFeedInterface{
@@ -26,5 +27,6 @@ public class RestaurantQuery {
     Double getLat();
     Double getLng();
     Double getDistance();
+    Double getGrade();
   }
 }

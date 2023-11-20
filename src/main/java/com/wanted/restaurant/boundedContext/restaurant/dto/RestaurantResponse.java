@@ -37,8 +37,10 @@ public class RestaurantResponse {
     private double distance;
     private double lat;
     private double lng;
+
+    private double grade;
     public static RestaurantListElement of(RestaurantFeed r){
-      return new RestaurantListElement(r.getId(),r.getName(),r.getType(),r.getDistance(),r.getLat(),r.getLng());
+      return new RestaurantListElement(r.getId(),r.getName(),r.getType(),r.getDistance(),r.getLat(),r.getLng(), r.getGrade());
     }
   }
 }
