@@ -49,7 +49,7 @@ public class RestaurantControllerTest {
 			.perform(
 				get("/restaurant/list")
 					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-					// 경기도 고양시 위, 경도, 범위
+					// 경기도 안양시 위, 경도, 범위
 					.param("lat", "37.3897")
 					.param("lng", "126.9533556")
 					.param("range", "1")
