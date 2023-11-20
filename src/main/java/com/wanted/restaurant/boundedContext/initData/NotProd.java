@@ -10,10 +10,9 @@ import org.springframework.context.annotation.Profile;
 
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
-import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
-import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
 import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
 import com.wanted.restaurant.util.Ut;
+import com.wanted.restaurant.util.openAPI.OpenAPIPipeline;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +23,7 @@ public class NotProd {
 
 	@Bean
 	CommandLineRunner initData(MemberRepository memberRepository, SigunguService sigunguService,
-		RestaurantRepository restaurantRepository) {
+		OpenAPIPipeline openAPIPipeline) {
 
 		String password = Ut.encrypt.encryptPW("1234");
 		return args -> {
@@ -57,48 +56,8 @@ public class NotProd {
 			// 시군구 정보 init
 			sigunguService.initSigunguData();
 
-			// 식당 정보 초기데이터
-			Restaurant restaurant1 = Restaurant.builder()
-				.sigunName("고양시") // 시군명
-				.businessPlaceName("하오츠가")
-				.sanitationBusinessName("중국식")
-				.refinedWGS84Latitude(37.6074127788)
-				.refinedWGS84Longitude(126.8917434058)
-				.build();
-
-			Restaurant restaurant2 = Restaurant.builder()
-				.sigunName("고양시") // 시군명
-				.businessPlaceName("니하오마라탕 일산점")
-				.sanitationBusinessName("중국식")
-				.refinedWGS84Latitude(37.6765511227)
-				.refinedWGS84Longitude(126.7517649851)
-				.build();
-
-			Restaurant restaurant3 = Restaurant.builder()
-				.sigunName("고양시") // 시군명
-				.businessPlaceName("하오츠가")
-				.sanitationBusinessName("중국식")
-				.refinedWGS84Latitude(37.6074127788)
-				.refinedWGS84Longitude(126.8917434058)
-				.build();
-
-			Restaurant restaurant4 = Restaurant.builder()
-				.sigunName("고양시") // 시군명
-				.businessPlaceName("소림마라고양덕양점")
-				.sanitationBusinessName("중국식")
-				.refinedWGS84Latitude(37.6275395982)
-				.refinedWGS84Longitude(126.8301680093)
-				.build();
-
-			Restaurant restaurant5 = Restaurant.builder()
-				.sigunName("고양시") // 시군명
-				.businessPlaceName("마라영웅")
-				.sanitationBusinessName("중국식")
-				.refinedWGS84Latitude(37.6867753865)
-				.refinedWGS84Longitude(126.7709996335)
-				.build();
-
-			restaurantRepository.saveAll(List.of(restaurant1, restaurant2, restaurant3, restaurant4, restaurant5));
+			// 데이터 받아오기
+			openAPIPipeline.pipeline();
 
 		};
 
