@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SigunguRepository extends JpaRepository<Sigungu, Long> {
 	Sigungu findByDosiContainingAndSigunguContaining(String doSi, String sgg);
+
+	Sigungu findByLongitudeAndLatitude(Double lng, Double lat);
 }
