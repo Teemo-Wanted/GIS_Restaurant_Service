@@ -14,15 +14,18 @@ import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
-	@Query(value = "select r.id as id, r.business_place_name as name, r.sanitation_business_name as type, r.refinedwgs84latitude as lat, r.refinedwgs84longitude as lng, "
+	@Query(value = "select r.id as id, r.business_place_name as name, r.sanitation_business_name as type, r.refinedwgs84latitude as lat, r.refinedwgs84longitude as lng, r.grade as grade,"
 		+
 		"ST_Distance_Sphere(POINT(r.refinedwgs84longitude,r.refinedwgs84latitude),POINT(:lng,:lat)) as distance " +
 		"from Restaurant r where ST_Distance_Sphere(POINT(r.refinedwgs84longitude,r.refinedwgs84latitude),POINT(:lng, :lat))<=:maxDistance "
 		+
-		"order by ST_Distance_Sphere(POINT(r.refinedwgs84longitude,r.refinedwgs84latitude),POINT(:lng,:lat)) asc", nativeQuery = true)
+		"order by CASE WHEN :orderType = 'score' "
+		+ "THEN r.grade END desc, "
+		+ "CASE WHEN :orderType IS NULL OR :orderType != 'score' "
+		+ "THEN ST_Distance_Sphere(POINT(r.refinedwgs84longitude,r.refinedwgs84latitude),POINT(:lng,:lat)) END asc", nativeQuery = true)
 	Slice<RestaurantQuery.RestaurantFeedInterface> searchRestaurants(@Param(value = "lat") double lat,
 		@Param(value = "lng") double lng,
-		@Param(value = "maxDistance") double maxDistance, Pageable pageable);
+		@Param(value = "maxDistance") double maxDistance, @Param(value = "orderType") String orderType, Pageable pageable);
 
 	List<Restaurant> findBySanitationBusinessName(String sanitationBusinessName);
 

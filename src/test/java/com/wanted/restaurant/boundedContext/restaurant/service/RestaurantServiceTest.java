@@ -47,13 +47,13 @@ public class RestaurantServiceTest {
     for(long i=0;i<5;i++){
       // 경기도 안양시 주입
       sampleRestaurants.add(new RestaurantFeedImpl(i,"sample restaurant name "+i,"sample type",
-          37.3897,126.9533556,0.1D));
+          37.3897,126.9533556,0.1D, 5));
       expectRestaurantList.add(new RestaurantFeed(i,"sample restaurant name "+i,"sample type",
-          37.3897,126.9533556,0.1D));
+          37.3897,126.9533556,0.1D, 5));
     }
     int samplePage = 0;
     int sampleSize = 5;
-    Mockito.when(restaurantRepository.searchRestaurants(anyDouble(),anyDouble(),anyDouble(), any()))
+    Mockito.when(restaurantRepository.searchRestaurants(anyDouble(),anyDouble(),anyDouble(),anyString(), any()))
         .thenReturn(new SliceImpl<>(sampleRestaurants,PageRequest.of(samplePage,sampleSize),false));
 
     Sigungu sigungu = new Sigungu("경기도", "안양시", 37.3897,126.9533556);
@@ -64,18 +64,18 @@ public class RestaurantServiceTest {
 
     //when (execute method)
     RestaurantResponse.RestaurantList response = restaurantService
-        .search(37.3897,126.9533556,12000,0,10).getData();
+        .search(37.3897,126.9533556,12000,"",0,10).getData();
 
     //then (verify)
     Assertions.assertThat(response).usingRecursiveComparison().isEqualTo(expectResult);
     Mockito.verify(restaurantRepository,Mockito.times(1))
-        .searchRestaurants(anyDouble(),anyDouble(),anyDouble(),any());
+        .searchRestaurants(anyDouble(),anyDouble(),anyDouble(), anyString(),any());
   }
   private RestaurantResponse.RestaurantList createExpectResult(List<RestaurantFeed> restaurants,int page,int size){
     List<RestaurantResponse.RestaurantListElement> list = new ArrayList<>();
     for(RestaurantFeed r : restaurants){
       list.add(new RestaurantResponse.RestaurantListElement(r.getId(),r.getName(),r.getType(),
-              0.1D,r.getLat(),r.getLng()));
+              0.1D,r.getLat(),r.getLng(), r.getGrade()));
     }
     return new RestaurantResponse.RestaurantList(page,size,false,list);
   }
@@ -87,6 +87,8 @@ public class RestaurantServiceTest {
     private double lat;
     private double lng;
     private double distance;
+
+    private double grade;
 
     @Override
     public Long getId() {
@@ -117,13 +119,17 @@ public class RestaurantServiceTest {
     public Double getDistance(){
       return this.distance;
     }
-    public RestaurantFeedImpl(long id,String name,String type,double lat,double lng, double distance){
+
+    @Override
+    public Double getGrade() {return this.grade;}
+    public RestaurantFeedImpl(long id,String name,String type,double lat,double lng, double distance, double grade){
       this.id=id;
       this.name=name;
       this.type=type;
       this.lat=lat;
       this.lng=lng;
       this.distance=distance;
+      this.grade = grade;
     }
   }
 }

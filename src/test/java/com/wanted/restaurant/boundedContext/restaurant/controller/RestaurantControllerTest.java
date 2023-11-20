@@ -42,7 +42,7 @@ public class RestaurantControllerTest {
 	}
 
 	@Test
-	@DisplayName("GET /restaurant/list 는 해당 지역의 식당을 검색한다. 경기도 안양시 테스트")
+	@DisplayName("GET /restaurant/list 는 해당 지역의 식당 목록을 출력한다. 정렬 기준 미선택시 거리순 정렬")
 	void t1() throws Exception {
 		// When
 		ResultActions resultActions = mvc
@@ -65,8 +65,38 @@ public class RestaurantControllerTest {
 	}
 
 	@Test
-	@DisplayName("GET /restaurant/{id} 는 해당 식당의 식당 정보와 리뷰를 출력한다.")
+	@DisplayName("GET /restaurant/list 는 식당 목록을 반환하는데, 평점 순으로 정렬 가능하다.")
 	void t2() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				get("/restaurant/list")
+					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+					// 경기도 안양시 위, 경도, 범위
+					.param("lat", "37.3897")
+					.param("lng", "126.9533556")
+					.param("range", "1")
+					.param("orderType", "score")
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value("경기안양시의 식당 조회 결과"))
+			.andExpect(jsonPath("$.data.restaurants[0].name").value("본도시락 안양범계점"))
+			.andExpect(jsonPath("$.data.restaurants[0].distance").value(629.0896002515127))
+			.andExpect(jsonPath("$.data.restaurants[0].grade").value(5))
+			.andExpect(jsonPath("$.data.restaurants[1].name").value("다께야우동"))
+			.andExpect(jsonPath("$.data.restaurants[1].distance").value(162.3171739760822))
+			.andExpect(jsonPath("$.data.restaurants[1].grade").value(4));
+
+	}
+
+	@Test
+	@DisplayName("GET /restaurant/{id} 는 해당 식당의 식당 정보와 리뷰를 출력한다.")
+	void t3() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(

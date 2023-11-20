@@ -27,9 +27,10 @@ public class RestaurantController {
 	public RsData<RestaurantResponse.RestaurantList> searchList
 		(@RequestParam(value = "lat") Double lat, @RequestParam(value = "lng") Double lng,
 			@RequestParam(value = "range") Double range,
+			@RequestParam(value = "orderType", required = false, defaultValue = "") String orderType,
 			@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
-		RsData<RestaurantResponse.RestaurantList> searchRsData = restaurantService.search(lat, lng, range * 1000, page,
+		RsData<RestaurantResponse.RestaurantList> searchRsData = restaurantService.search(lat, lng, range * 1000, orderType, page,
 			size);
 
 		return searchRsData;
