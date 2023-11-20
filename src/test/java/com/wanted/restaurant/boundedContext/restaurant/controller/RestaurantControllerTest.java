@@ -63,4 +63,25 @@ public class RestaurantControllerTest {
 			.andExpect(jsonPath("$.msg").value("경기안양시의 식당 조회 결과"))
 			.andExpect(jsonPath("$.data.restaurants[0].name").value("다께야우동"));
 	}
+
+	@Test
+	@DisplayName("GET /restaurant/{id} 는 해당 식당의 식당 정보와 리뷰를 출력한다.")
+	void t2() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				get("/restaurant/1")
+					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value("식당 정보 조회 성공"))
+			.andExpect(jsonPath("$.data.businessPlaceName").value("쌍홍루"))
+			.andExpect(jsonPath("$.data.sigunName").value("의정부시"))
+			.andExpect(jsonPath("$.data.evaluations[0].content").value("맛있어용"));
+	}
 }
