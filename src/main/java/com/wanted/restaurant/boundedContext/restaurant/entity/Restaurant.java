@@ -1,24 +1,19 @@
 package com.wanted.restaurant.boundedContext.restaurant.entity;
 
+import static jakarta.persistence.GenerationType.*;
+
+import java.time.LocalDate;
+
+import org.hibernate.annotations.DynamicUpdate;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.SqlResultSetMapping;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
-
-import java.time.LocalDate;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-
-import com.wanted.restaurant.boundedContext.restaurant.dto.LunchDTO;
 
 @Getter
 @AllArgsConstructor

@@ -1,9 +1,9 @@
 package com.wanted.restaurant.base.resolver;
 
+import com.wanted.restaurant.boundedContext.member.entity.Member;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import com.wanted.restaurant.boundedContext.member.entity.Member;
 @Getter
 @AllArgsConstructor
 public class LoginMember {

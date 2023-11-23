@@ -13,11 +13,13 @@ import com.wanted.restaurant.boundedContext.restaurant.service.RestaurantService
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/restaurant")
+@RequestMapping("/restaurant" )
 @RequiredArgsConstructor
+@Tag(name = "RestaurantController", description = "식당 평가 및 조회 컨트롤러")
 public class RestaurantController {
 
 	private final RestaurantService restaurantService;

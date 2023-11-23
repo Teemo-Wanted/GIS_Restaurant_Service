@@ -1,5 +1,10 @@
 package com.wanted.restaurant.boundedContext.evalutation.service;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.wanted.restaurant.base.rsData.RsData;
 import com.wanted.restaurant.boundedContext.evalutation.dto.EvaluateRequestDto;
 import com.wanted.restaurant.boundedContext.evalutation.dto.EvaluateResponseDto;
@@ -10,12 +15,8 @@ import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
 import com.wanted.restaurant.boundedContext.restaurant.service.RestaurantService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,9 @@
 package com.wanted.restaurant.util.openAPI;
 
-import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
-import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
+import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc

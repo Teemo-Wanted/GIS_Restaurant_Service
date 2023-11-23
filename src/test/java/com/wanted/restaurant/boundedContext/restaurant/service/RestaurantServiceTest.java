@@ -1,17 +1,10 @@
 package com.wanted.restaurant.boundedContext.restaurant.service;
 
-import com.wanted.restaurant.base.rsData.RsData;
-import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery;
-import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
-import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeedInterface;
-import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
-import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
-import com.wanted.restaurant.boundedContext.sigungu.entity.Sigungu;
-import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
+import static org.mockito.ArgumentMatchers.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeedInterface;
+import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
+import com.wanted.restaurant.boundedContext.restaurant.repository.RestaurantRepository;
+import com.wanted.restaurant.boundedContext.sigungu.entity.Sigungu;
+import com.wanted.restaurant.boundedContext.sigungu.service.SigunguService;
 
-import static org.mockito.ArgumentMatchers.*;
+import lombok.NoArgsConstructor;
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantServiceTest {
