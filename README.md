@@ -8,8 +8,9 @@
 - [개요](#개요)
 - [Skills](#skills)
 - [프로젝트 진행 및 이슈 관리](#프로젝트-진행-및-이슈-관리)
+- [API Swagger Docs](#api-swagger-docs)
 - [Flow Chart](#flow-chart)
-- [TIL(Today I Learn)](#til(today-i-learn))
+- [TIL(Today I Learn)](#til)
 - [참여자](#참여자)
 
 ## 개요
@@ -33,7 +34,11 @@
 
 [Notion](https://www.notion.so/7243a00dd74d4cc995792bae6444678e?pvs=21)
 
-# Flow Chart
+## API Swagger Docs
+
+![image](https://github.com/Teemo-Wanted/GIS_Restaurant_Service/assets/126079049/106d8ea9-4ba8-436d-bc32-96697255fcfe)
+
+## Flow Chart
 
 ### 회원가입 & 로그인
 
@@ -135,7 +140,7 @@
 - [상세 설명 및 코드 - 디스코드 채팅방 웹훅 보내어 자동으로 식당 추천기능](https://github.com/Teemo-Wanted/GIS_Restaurant_Service/pull/18)
 - [상세 설명 및 코드 - [Refactor] discord webhook 카테고리별 평점 높은 3개씩 출력되도록 변경](https://github.com/Teemo-Wanted/GIS_Restaurant_Service/pull/29)
 
-## TIL(Today I Learn)
+## TIL
 
 | 키워드 | 링크 |
 | :---: | :---: |
