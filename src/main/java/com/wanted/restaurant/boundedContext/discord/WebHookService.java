@@ -19,11 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.wanted.restaurant.base.rsData.RsData;
-import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.service.MemberService;
 import com.wanted.restaurant.boundedContext.restaurant.dto.LunchDTO;
-import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantResponse;
-import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
 import com.wanted.restaurant.boundedContext.restaurant.service.RestaurantService;
 import com.wanted.restaurant.util.Ut;
 

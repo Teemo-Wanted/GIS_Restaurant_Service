@@ -8,9 +8,9 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @OpenAPIDefinition(
-        info = @Info(title = "restaurant",
-                description = "teemO 2nd Project restaurant",
-                version = "v1")
+	info = @Info(title = "Restaurant",
+		description = "teemO 2nd Project restaurant",
+		version = "v1")
 )
 @Configuration
 @SecurityScheme(

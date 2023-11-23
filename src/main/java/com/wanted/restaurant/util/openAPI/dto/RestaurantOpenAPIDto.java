@@ -3,6 +3,7 @@ package com.wanted.restaurant.util.openAPI.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
+
 import lombok.Getter;
 @Getter
 public class RestaurantOpenAPIDto {

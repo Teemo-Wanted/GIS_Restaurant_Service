@@ -1,6 +1,5 @@
 package com.wanted.restaurant.boundedContext.member.controller;
 
-import static jakarta.persistence.GenerationType.*;
 import static org.springframework.http.MediaType.*;
 
 import java.util.List;
@@ -14,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wanted.restaurant.base.resolver.LoginMember;
 import com.wanted.restaurant.base.resolver.LoginUser;
 import com.wanted.restaurant.base.rsData.RsData;
-import com.wanted.restaurant.boundedContext.member.entity.AlarmType;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.service.MemberService;
 
@@ -27,11 +24,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -97,7 +89,8 @@ public class MemberController {
 
 	@PatchMapping(value = "/update", consumes = APPLICATION_JSON_VALUE)
 	@Operation(summary = "사용자 설정 업데이트(위치, 점심 추천 기능)", security = @SecurityRequirement(name = "bearerAuth"))
-	public RsData updateInfo(@Valid @RequestBody UpdateRequest updateRequest, BindingResult bindingResult, @Parameter(hidden = true) @LoginUser
+	public RsData updateInfo(@Valid @RequestBody UpdateRequest updateRequest, BindingResult bindingResult,
+		@Parameter(hidden = true) @LoginUser
 		LoginMember loginMember) {
 		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
 		if (bindingResult.hasErrors()) {
@@ -108,7 +101,8 @@ public class MemberController {
 			return RsData.of("F-1", errorMessages.get(0));
 		}
 
-		RsData<String> rsData = memberService.update(loginMember.getId(), updateRequest.getDoSi(), updateRequest.getSgg(), updateRequest.getAlarm());
+		RsData<String> rsData = memberService.update(loginMember.getId(), updateRequest.getDoSi(),
+			updateRequest.getSgg(), updateRequest.getAlarm());
 
 		return rsData;
 	}
@@ -122,10 +116,11 @@ public class MemberController {
 
 		private String email;
 
-		private String lat;	 // 위도
+		private String lat;     // 위도
 		private String lon;  // 경도
 
 		private String alarmType;
+
 		public MeResponse(Member member) {
 			this.memberId = member.getId();
 			this.userName = member.getAccount();
@@ -142,8 +137,8 @@ public class MemberController {
 	public RsData<MeResponse> memberInfo(@Parameter(hidden = true) @LoginUser LoginMember loginMember) {
 		RsData<Member> rsData = memberService.get(loginMember.getId());
 
-		if(rsData.isFail())
-			return (RsData) rsData;
+		if (rsData.isFail())
+			return (RsData)rsData;
 
 		return RsData.of(rsData.getResultCode(), rsData.getMsg(), new MeResponse(rsData.getData()));
 	}

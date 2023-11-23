@@ -1,14 +1,19 @@
 package com.wanted.restaurant.boundedContext.evalutation.entity;
 
+import static jakarta.persistence.GenerationType.*;
+
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.restaurant.entity.Restaurant;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter

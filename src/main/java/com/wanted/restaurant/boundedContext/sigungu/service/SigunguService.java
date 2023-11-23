@@ -1,13 +1,5 @@
 package com.wanted.restaurant.boundedContext.sigungu.service;
 
-import com.wanted.restaurant.base.rsData.RsData;
-import com.wanted.restaurant.boundedContext.sigungu.entity.Sigungu;
-import com.wanted.restaurant.boundedContext.sigungu.repository.SigunguRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,6 +8,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.sigungu.entity.Sigungu;
+import com.wanted.restaurant.boundedContext.sigungu.repository.SigunguRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

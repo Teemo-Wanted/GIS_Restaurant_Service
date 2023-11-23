@@ -1,6 +1,7 @@
 package com.wanted.restaurant.boundedContext.evalutation.dto;
 
 import com.wanted.restaurant.boundedContext.evalutation.entity.Evaluation;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,12 +1,14 @@
 package com.wanted.restaurant.boundedContext.restaurant.dto;
 
+import java.util.List;
+
+import org.springframework.data.domain.Slice;
+
 import com.wanted.restaurant.boundedContext.restaurant.dto.RestaurantQuery.RestaurantFeed;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Slice;
-
-import java.util.List;
 
 public class RestaurantResponse {
   @AllArgsConstructor
