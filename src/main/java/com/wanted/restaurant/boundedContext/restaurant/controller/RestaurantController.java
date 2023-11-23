@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/restaurant" )
 @RequiredArgsConstructor
-@Tag(name = "RestaurantController", description = "식당 평가 및 조회 컨트롤러")
+@Tag(name = "RestaurantController", description = "식당 조회 컨트롤러")
 public class RestaurantController {
 
 	private final RestaurantService restaurantService;
