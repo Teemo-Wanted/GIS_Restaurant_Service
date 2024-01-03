@@ -8,25 +8,41 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class JwtTests {
-	@Value("${custom.jwt.secretKey}")
-	private String secretKeyPlain;
+	private String secretKeyPlain = "secretKeyTestPlainsecretKeyTestPlainsecretKeyTestPlainsecretKeyTestPlain";
 
-	@Autowired
+	@InjectMocks // 테스트 환경에서 동작할 진짜 객체 생성(메서드 동작 o)
 	private JwtProvider jwtProvider;
+
+	/*
+		속성값에 테스트용 SecretKey 넣어주기
+		- ReflectionTestUtils : 리플렉션을 사용하여 테스트 케이스에 필요한 값을 주입하거나 가져옴
+		  - 리플렉션은 일반적으로 private 필드나 메서드 접근할 수 없지만 테스트 환경에서는 가능
+		  - setFiled : 주어진 객체의 필드 값 설정
+		  - getFiled : 주어진 객체의 필드 값 가져옴
+		  - invokeMethod : 주어진 객체의 메서드 호출
+	 */
+	@BeforeEach
+	public void setUp() {
+		// secret key 값을 넣어줌
+		ReflectionTestUtils.setField(jwtProvider, "secretKeyPlain", secretKeyPlain);
+	}
 
 	@Test
 	@DisplayName("secretKey 키가 존재해야한다.")
