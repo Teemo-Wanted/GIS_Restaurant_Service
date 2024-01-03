@@ -140,14 +140,6 @@
 - [상세 설명 및 코드 - 디스코드 채팅방 웹훅 보내어 자동으로 식당 추천기능](https://github.com/Teemo-Wanted/GIS_Restaurant_Service/pull/18)
 - [상세 설명 및 코드 - [Refactor] discord webhook 카테고리별 평점 높은 3개씩 출력되도록 변경](https://github.com/Teemo-Wanted/GIS_Restaurant_Service/pull/29)
 
-## TIL
-
-| 키워드 | 링크 |
-| :---: | :---: |
-|  |  |
-|  |  |
-|  |  |
-
 ## 참여자
 
 - [김태형](https://github.com/johan1103) : 식당 조회
