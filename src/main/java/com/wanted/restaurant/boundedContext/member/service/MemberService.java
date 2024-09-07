@@ -1,16 +1,20 @@
 package com.wanted.restaurant.boundedContext.member.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wanted.restaurant.base.jwt.JwtProvider;
 import com.wanted.restaurant.base.rsData.RsData;
 import com.wanted.restaurant.boundedContext.email.service.EmailService;
+import com.wanted.restaurant.boundedContext.member.dto.TokenDTO;
 import com.wanted.restaurant.boundedContext.member.entity.AlarmType;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
@@ -30,6 +34,10 @@ public class MemberService {
 	private final EmailService emailService;
 
 	private final SigunguService sigunguService;
+
+	private MemberService memberService;
+
+	private final ApplicationContext applicationContext;
 
 	@Transactional
 	public RsData join(String account, String password, String email) {
@@ -61,7 +69,7 @@ public class MemberService {
 	}
 
 	@Transactional
-	public RsData<String> login(String account, String password, String tempCode) {
+	public RsData<TokenDTO> login(String account, String password, String tempCode) {
 		Member member = getMemberByAccount(account);
 		// 가입된 ID가 없는 경우
 		if (member == null) {
@@ -87,14 +95,67 @@ public class MemberService {
 			updateMemberAfterEmailVerification(member);
 		}
 
-		String accessToken = member.getAccessToken();
-		// 토큰 갱신이 필요한 경우
-		if (isAccessTokenRenewalRequired(accessToken)) {
-			String newAccessToken = renewAccessToken(member);
-			return RsData.of("S-1", "JWT 발급 성공", newAccessToken);
+		String accessToken = genAccessToken(member);
+		String refreshToken = genRefreshToken(member);
+
+		// 리프레시 토큰 갱신
+		member.updateRefreshToken(refreshToken);
+		_updateRefreshToken__Cached(member); // Cache 값 갱신
+
+		return RsData.of("S-1", "토큰 발급 성공", new TokenDTO(accessToken, refreshToken));
+	}
+
+	// 캐시된 리프레시 토큰 있다면 해당 메서드 실행하지 않음
+	@Cacheable(value = "Refresh", key = "#targetId")
+	public String getRefreshTokenByCached(long targetId) {
+		if (memberService == null) {
+			applicationContext.getBean("memberService", MemberService.class);
 		}
 
-		return RsData.of("S-1", "JWT 발급 성공", accessToken);
+		Member member = memberService.get(targetId).getData();
+		return member.getRefreshToken();
+	}
+
+	private String _updateRefreshToken__Cached(Member member) {
+		if (memberService == null) {
+			// 의존성 순환 참조 때문에 RedisService를 의존성 주입 불가
+			// 따라서 Context에 등록된 memberService 객체 가져와서 실행
+			memberService = applicationContext.getBean("memberService", MemberService.class);
+		}
+
+		return memberService.updateRefreshToken__Cached(member);
+	}
+
+	// 캐시된 리프레시 토큰을 갱신
+	@CachePut(value = "Refresh", key = "#member.id")
+	public String updateRefreshToken__Cached(Member member) {
+		return member.getRefreshToken();
+	}
+
+	@CacheEvict(value = "Refresh", key = "#memberId")
+	@Transactional
+	public RsData deleteRefreshToken(Long memberId) {
+
+		Member member = memberRepository.findById(memberId).orElse(null);
+		if(member == null) {
+			return RsData.of("F-1", "사용자 Id : " + memberId + " 는 존재하지 않는 회원입니다.");
+		}
+		// DB 초기화
+		member.resetRefreshToken();
+
+		return RsData.of("S-1", "사용자 Id : " + member.getAccount() + "의 Refresh Token 초기화 성공 재로그인 해주세요", null);
+	}
+
+	private String genRefreshToken(Member member) {
+		Map<String, Object> memberInfo = member.toClaims();
+		memberInfo.put("Type", "Refresh");
+		// 3일짜리 RT 발급
+		return jwtProvider.genToken(member.toClaims(), 60 * 60 * 24 * 3);
+	}
+
+	private String genAccessToken(Member member) {
+		// 1일 짜리 JWT 발급
+		return jwtProvider.genToken(member.toClaims(), 60 * 60 * 24 * 1);
 	}
 
 	private Member getMemberByAccount(String account) {
@@ -114,41 +175,24 @@ public class MemberService {
 		memberRepository.save(modifiedMember);
 	}
 
-	private boolean isAccessTokenRenewalRequired(String accessToken) {
-		return accessToken == null || !jwtProvider.verify(accessToken);
-	}
-
-	private String renewAccessToken(Member member) {
-		Map<String, Object> claims = new HashMap<>();
-		claims.put("id", member.getId());
-		claims.put("account", member.getAccount());
-
-		String newAccessToken = jwtProvider.genToken(claims, 60 * 60 * 24 * 365);
-
-		Member modifiedMember = member.toBuilder().accessToken(newAccessToken).build();
-		memberRepository.save(modifiedMember);
-
-		return newAccessToken;
-	}
-
 	@Transactional
 	public RsData update(Long memberId, String doSi, String sgg, String alarm) {
 		Member member = memberRepository.findById(memberId).get();
 
 		// 강원 or 강원도, 세종 or 세종시 or 세종특별시 등 입력 다양하게 할 수 있으니 앞에 2글자만 추출
-		RsData<List<Double>> rsDataLatAndLon = sigunguService.getLatAndLonByDoSiAndSgg(doSi.substring(0, 2), sgg.substring(0, 2));
+		RsData<List<Double>> rsDataLatAndLon = sigunguService.getLatAndLonByDoSiAndSgg(doSi.substring(0, 2),
+			sgg.substring(0, 2));
 
-		if(rsDataLatAndLon.isFail())
+		if (rsDataLatAndLon.isFail())
 			return rsDataLatAndLon;
 
 		AlarmType alarmType;
-		if(alarm.contains("y") || alarm.contains("Y"))
+		if (alarm.contains("y") || alarm.contains("Y"))
 			alarmType = AlarmType.YES;
 		else
 			alarmType = AlarmType.NO;
 
 		List<Double> data = rsDataLatAndLon.getData();
-
 
 		Member modifyMember = member.toBuilder()
 			.lon(String.valueOf(data.get(0)))
@@ -163,12 +207,19 @@ public class MemberService {
 
 	public RsData<Member> get(Long memberId) {
 		Member member = memberRepository.findById(memberId).get();
-		if(member == null)
+		if (member == null)
 			return RsData.of("F-1", "일치하는 회원정보가 없습니다.");
 		return RsData.of("S-1", "회원 조회 성공", member);
 	}
 
 	public List<Member> getAllMembersByAlarmYes() {
 		return memberRepository.findAllByAlarmType(AlarmType.YES);
+	}
+
+	public Member createByClaims(Map<String, Object> claims) {
+		return Member.builder()
+			.id((long)(int)claims.get("id"))
+			.account((String)claims.get("account"))
+			.build();
 	}
 }

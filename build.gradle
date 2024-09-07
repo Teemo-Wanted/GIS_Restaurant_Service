@@ -57,6 +57,8 @@ dependencies {
 
 	// Discord Bot JDA 의존성
 	implementation 'net.dv8tion:JDA:5.0.0-beta.12'
+
+	implementation 'org.springframework.boot:spring-boot-starter-cache' // 스프링 캐시 추상화
 }
 
 tasks.named('test') {

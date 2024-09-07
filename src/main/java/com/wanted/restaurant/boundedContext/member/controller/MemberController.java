@@ -3,9 +3,11 @@ package com.wanted.restaurant.boundedContext.member.controller;
 import static org.springframework.http.MediaType.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wanted.restaurant.base.jwt.JwtProvider;
 import com.wanted.restaurant.base.resolver.LoginMember;
 import com.wanted.restaurant.base.resolver.LoginUser;
 import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.boundedContext.member.dto.TokenDTO;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.service.MemberService;
 
@@ -37,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "MemberController", description = "회원가입, 로그인처리 컨트롤러")
 public class MemberController {
 	private final MemberService memberService;
+	private final JwtProvider jwtProvider;
 
 	@PostMapping(value = "/signup", consumes = APPLICATION_JSON_VALUE)
 	@Operation(summary = "회원가입")
@@ -68,7 +73,7 @@ public class MemberController {
 			return RsData.of("F-1", errorMessages.get(0));
 		}
 
-		RsData<String> rsData = memberService.login(signInRequest.getAccount(), signInRequest.getPassword(),
+		RsData<TokenDTO> rsData = memberService.login(signInRequest.getAccount(), signInRequest.getPassword(),
 			signInRequest.getTempCode());
 
 		return rsData;
@@ -169,6 +174,47 @@ public class MemberController {
 
 		@Schema(description = "최초 로그인 시 이메일 인증 코드", example = "000000")
 		private String tempCode = "";
+	}
+
+	@Data
+	public static class ResetRequest {
+		@NotBlank(message = "삭제하고자 하는 RT를 입력해주세요. 로그인한 본인만 가능합니다.")
+		@Schema(description = "삭제하고자 하는 Refresh Token", example = "wqijkwdqmjklasdklasdklmasdksak")
+		private String refreshToken;
+	}
+
+	@DeleteMapping("/reset")
+	@Operation(summary = "RT 초기화", security = {
+		@SecurityRequirement(name = "bearerAuth"),
+		@SecurityRequirement(name = "RefreshToken")
+	})
+	public RsData resetRefreshToken(@Valid @RequestBody ResetRequest resetRequest, BindingResult bindingResult,
+		@Parameter(hidden = true) @LoginUser LoginMember loginMember) {
+		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
+		if (bindingResult.hasErrors()) {
+			List<String> errorMessages = bindingResult.getAllErrors()
+				.stream()
+				.map(error -> error.getDefaultMessage())
+				.collect(Collectors.toList());
+			return RsData.of("F-1", errorMessages.get(0));
+		}
+
+		Map<String, Object> claimsByRefreshToken = jwtProvider.getClaims(resetRequest.getRefreshToken());
+
+		String getUserNameByRefreshToken = (String)claimsByRefreshToken.get("account");
+
+		String getUserNameByPrinciple = loginMember.getAccount();
+
+		// 현재 로그인한 사용자의 RT여야 삭제 가능 or 관리자가 특정 토큰 삭제 하려고 할 때 가능
+		if (!getUserNameByPrinciple.equals(getUserNameByRefreshToken)) {
+			if (!getUserNameByPrinciple.equals("admin")) {
+				return RsData.of("F-1", "본인의 Refresh Token만 삭제 가능합니다.");
+			}
+		}
+
+		RsData rsData = memberService.deleteRefreshToken((long)(int)claimsByRefreshToken.get("id"));
+
+		return rsData;
 	}
 
 }

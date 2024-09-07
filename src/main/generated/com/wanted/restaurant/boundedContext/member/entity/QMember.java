@@ -19,8 +19,6 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
-    public final StringPath accessToken = createString("accessToken");
-
     public final StringPath account = createString("account");
 
     public final EnumPath<AlarmType> alarmType = createEnum("alarmType", AlarmType.class);
@@ -34,6 +32,8 @@ public class QMember extends EntityPathBase<Member> {
     public final StringPath lon = createString("lon");
 
     public final StringPath password = createString("password");
+
+    public final StringPath refreshToken = createString("refreshToken");
 
     public final NumberPath<Integer> tempCode = createNumber("tempCode", Integer.class);
 

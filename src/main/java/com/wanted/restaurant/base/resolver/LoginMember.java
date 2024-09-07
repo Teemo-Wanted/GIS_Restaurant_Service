@@ -9,8 +9,7 @@ import lombok.Getter;
 public class LoginMember {
   private Long id;
   private String account;
-  private String accessToken;
   public static LoginMember of(Member member){
-    return new LoginMember(member.getId(),member.getAccount(),member.getAccessToken());
+    return new LoginMember(member.getId(),member.getAccount());
   }
 }
