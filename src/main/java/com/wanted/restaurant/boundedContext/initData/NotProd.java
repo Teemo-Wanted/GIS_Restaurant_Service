@@ -34,9 +34,6 @@ public class NotProd {
 				.account("user1")
 				.password(password)
 				.email("user1@test.com")
-				// 유효기간 : 1년(2023-11-06)
-				.accessToken(
-					"eyJhbGciOiJIUzUxMiJ9.eyJib2R5Ijoie1wiaWRcIjoxLFwiYWNjb3VudFwiOlwidXNlcjFcIn0iLCJleHAiOjE3MzA3ODc1NDd9.JFALSiab13HzYvVjrmv5nWG_KAza579-HwifKL_oaO1f6CF7IFJ1kVXrGcKRuM0v1kD4KeTW7KjeMPavmOtOZA")
 				.build();
 
 			Member user2 = Member.builder()

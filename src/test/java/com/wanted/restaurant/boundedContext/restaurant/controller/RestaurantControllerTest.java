@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wanted.restaurant.base.jwt.JwtProvider;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
 
@@ -27,14 +28,16 @@ public class RestaurantControllerTest {
 	@Autowired
 	private MemberRepository memberRepository;
 
+	@Autowired
+	private JwtProvider jwtProvider;
+
 	private Member user1;
 	private String user1Token;
 
 	@BeforeEach
 	void init() {
-		// 테스트용 user1 토큰 가져오기
 		user1 = memberRepository.findByAccount("user1").get();
-		user1Token = user1.getAccessToken();
+		user1Token = jwtProvider.genToken(user1.toClaims(), 100);
 	}
 
 	@Test
@@ -106,8 +109,9 @@ public class RestaurantControllerTest {
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
 			.andExpect(jsonPath("$.msg").value("식당 정보 조회 성공"))
-			.andExpect(jsonPath("$.data.businessPlaceName").value("쌍홍루"))
-			.andExpect(jsonPath("$.data.sigunName").value("의정부시"))
+			// API 호출 시점에 따라 식당 정보가 달라지기 때문에 장소가 있고 리뷰 내용이 잘 들어가있는지로 검증하도록 변경
+			.andExpect(jsonPath("$.data.businessPlaceName").exists())
+			.andExpect(jsonPath("$.data.sigunName").exists())
 			.andExpect(jsonPath("$.data.evaluations[0].content").value("맛있어용"));
 	}
 }

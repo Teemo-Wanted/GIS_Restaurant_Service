@@ -15,12 +15,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wanted.restaurant.base.rsData.RsData;
+import com.wanted.restaurant.base.jwt.JwtProvider;
 import com.wanted.restaurant.boundedContext.member.entity.Member;
 import com.wanted.restaurant.boundedContext.member.repository.MemberRepository;
 
@@ -34,14 +32,16 @@ public class MemberControllerTests {
 	@Autowired
 	private MemberRepository memberRepository;
 
+	@Autowired
+	private JwtProvider jwtProvider;
+
 	private Member user1;
 	private String user1Token;
 
 	@BeforeEach
 	void init() {
-		// 테스트용 user1 토큰 가져오기
 		user1 = memberRepository.findByAccount("user1").get();
-		user1Token = user1.getAccessToken();
+		user1Token = jwtProvider.genToken(user1.toClaims(), 100);
 	}
 
 	@Test
@@ -127,18 +127,18 @@ public class MemberControllerTests {
 	}
 
 	@Test
-	@DisplayName("로그인 시 JWT 발급 테스트")
+	@DisplayName("로그인 시 AT, RT 발급 테스트")
 	void t4() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(
 				post("/member/signin")
 					.content("""
-                    {
-                        "account": "user2",
-                        "password": "1234"
-                    }
-                    """.stripIndent())
+						{
+						    "account": "user2",
+						    "password": "1234"
+						}
+						""".stripIndent())
 					// JSON 형태로 보내겠다
 					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
 			)
@@ -148,23 +148,25 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"))
-			.andExpect(jsonPath("$.data").isNotEmpty());
+			.andExpect(jsonPath("$.msg").value("토큰 발급 성공"))
+			.andExpect(jsonPath("$.data.accessToken").isNotEmpty())
+			.andExpect(jsonPath("$.data.refreshToken").isNotEmpty());
 	}
 
 	@Test
-	@DisplayName("여러번 로그인 해도 아직 토큰이 유효하다면 동일한 토큰을 발급한다.")
+	@DisplayName("회원가입 인증 - 올바른 이메일 인증 코드를 입력했을 때 로그인 및 토큰이 발행된다.")
 	void t5() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(
 				post("/member/signin")
 					.content("""
-                    {
-                        "account": "user2",
-                        "password": "1234"
-                    }
-                    """.stripIndent())
+						{
+						    "account": "user3",
+						    "password": "1234",
+						    "tempCode" : "123456"
+						}
+						""".stripIndent())
 					// JSON 형태로 보내겠다
 					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
 			)
@@ -174,90 +176,25 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"));
-
-		MvcResult result = resultActions.andReturn();
-		String jsonResponse = result.getResponse().getContentAsString();
-
-		// JSON 문자열을 Java 객체로 변환
-		ObjectMapper objectMapper = new ObjectMapper();
-		RsData<String> response = objectMapper.readValue(jsonResponse, RsData.class);
-
-		String tmp1 = response.getData();
-
-		// 두 번째 요청 수행
-		ResultActions resultActions2 = mvc
-			.perform(
-				post("/member/signin")
-					.content("""
-                    {
-                        "account": "user2",
-                        "password": "1234"
-                    }
-                    """.stripIndent())
-					// JSON 형태로 보내겠다
-					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-			)
-			.andDo(print());
-
-		// Then (두 번째 응답 처리)
-		resultActions2
-			.andExpect(status().is2xxSuccessful())
-			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value("JWT 발급 성공"));
-
-		MvcResult result2 = resultActions2.andReturn();
-		String jsonResponse2 = result2.getResponse().getContentAsString();
-
-		// 두 번째 응답 데이터를 Java 객체로 변환
-		RsData<String> response2 = objectMapper.readValue(jsonResponse2, RsData.class);
-
-		String tmp2 = response2.getData();
-
-		assertThat(tmp1).isEqualTo(tmp2);
+			.andExpect(jsonPath("$.msg").value("토큰 발급 성공"))
+			.andExpect(jsonPath("$.data.accessToken").isNotEmpty())
+			.andExpect(jsonPath("$.data.refreshToken").isNotEmpty());
 	}
 
 	@Test
-	@DisplayName("올바른 이메일 인증 코드를 입력했을 때 JWT가 발급되어야 함")
+	@DisplayName("잘못된 이메일 인증 코드를 입력했을 때 실패 메시지 출력")
 	void t6() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(
 				post("/member/signin")
 					.content("""
-                    {
-                        "account": "user3",
-                        "password": "1234",
-                        "tempCode" : "123456"
-                    }
-                    """.stripIndent())
-					// JSON 형태로 보내겠다
-					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
-			)
-			.andDo(print());
-
-		// Then
-		resultActions
-			.andExpect(status().is2xxSuccessful())
-			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"))
-			.andExpect(jsonPath("$.data").isNotEmpty());
-	}
-
-	@Test
-	@DisplayName("잘못된 이메일 인증 코드를 입력했을 때 실패 메시지 출력")
-	void t7() throws Exception {
-		// When
-		ResultActions resultActions = mvc
-			.perform(
-				post("/member/signin")
-					.content("""
-                    {
-                        "account": "user3",
-                        "password": "1234",
-                        "tempCode" : "12356"
-                    }
-                    """.stripIndent())
+						{
+						    "account": "user3",
+						    "password": "1234",
+						    "tempCode" : "12356"
+						}
+						""".stripIndent())
 					// JSON 형태로 보내겠다
 					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
 			)
@@ -267,24 +204,24 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("F-1"))
-			.andExpect(jsonPath("$.msg").value( "이메일 인증 코드가 일치하지 않습니다."))
+			.andExpect(jsonPath("$.msg").value("이메일 인증 코드가 일치하지 않습니다."))
 			.andExpect(jsonPath("$.data").isEmpty());
 	}
 
 	@Test
 	@DisplayName("사용자 정보 업데이트 테스트, 알람 설정 기본값 No")
-	void t8() throws Exception {
+	void t7() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(
 				patch("/member/update")
 					.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
 					.content("""
-                    {
+						              {
 						"doSi": "강원도",
 						"sgg": "춘천시"
-                    }
-                    """.stripIndent())
+						              }
+						              """.stripIndent())
 					// JSON 형태로 보내겠다
 					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
 			)
@@ -294,7 +231,7 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value( "회원 정보 업데이트 성공"))
+			.andExpect(jsonPath("$.msg").value("회원 정보 업데이트 성공"))
 			.andExpect(jsonPath("$.data.lon").value("127.7323111"))
 			.andExpect(jsonPath("$.data.lat").value("37.87854167"))
 			.andExpect(jsonPath("$.data.alarmType").value("NO"));
@@ -302,7 +239,7 @@ public class MemberControllerTests {
 
 	@Test
 	@DisplayName("사용자 정보 확인")
-	void t9() throws Exception {
+	void t8() throws Exception {
 		// When
 		ResultActions resultActions = mvc
 			.perform(
@@ -315,7 +252,7 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value( "회원 조회 성공"))
+			.andExpect(jsonPath("$.msg").value("회원 조회 성공"))
 			.andExpect(jsonPath("$.data.memberId").value("1"))
 			.andExpect(jsonPath("$.data.userName").value("user1"))
 			.andExpect(jsonPath("$.data.email").value("user1@test.com"))
